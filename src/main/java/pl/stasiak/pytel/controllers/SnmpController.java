@@ -6,13 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
 import pl.stasiak.pytel.SnmpManager;
-import pl.stasiak.pytel.entities.GetNextReply;
+import pl.stasiak.pytel.entities.GetReply;
 import pl.stasiak.pytel.entities.GetTableReply;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,19 +27,20 @@ public class SnmpController {
 
     }
     @RequestMapping(value = "/get/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody ResponseEntity<String> get(@PathVariable String ip, @PathVariable String oid) {
+    public @ResponseBody ResponseEntity<GetReply> get(@PathVariable String ip, @PathVariable String oid) {
 
         SnmpManager client = new SnmpManager("udp:" + ip + "/161");
         try {
-            return new ResponseEntity<String>(client.getAsString(new OID(oid)), HttpStatus.OK);
+            String value = client.getAsString(new OID(oid));
+            return new ResponseEntity<GetReply>(new GetReply(value,oid), HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<String>("", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<GetReply>(new GetReply("", ""), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/getNext/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody ResponseEntity<GetNextReply> getLogsRecordsFromDate(@PathVariable String ip, @PathVariable String oid) {
+    public @ResponseBody ResponseEntity<GetReply> getLogsRecordsFromDate(@PathVariable String ip, @PathVariable String oid) {
 
         SnmpManager client;
         client = new SnmpManager("udp:" + ip + "/161");
@@ -53,10 +52,10 @@ public class SnmpController {
             e.printStackTrace();
         }
         if (result == null) {
-            return new ResponseEntity<GetNextReply>(new GetNextReply("", ""),
+            return new ResponseEntity<GetReply>(new GetReply("", ""),
                     HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<GetNextReply>(new GetNextReply(result.getValue(), result.getKey()),
+            return new ResponseEntity<GetReply>(new GetReply(result.getValue(), result.getKey()),
                     HttpStatus.OK);
         }
     }

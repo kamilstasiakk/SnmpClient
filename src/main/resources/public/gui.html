@@ -12,8 +12,12 @@
 
     <button class="w3-btn w3-green w3-ripple"  ng-click="performAction()">&#9998; Perform</button>
     <br>
+    <br>
+    <button class="w3-btn w3-round-large" ng-click="showGets()">GetResponse</button>
+    <button class="w3-btn w3-round-large" ng-click="showTable()">Table</button>
+    <button class="w3-btn w3-round-large" ng-click="showMonitor()">Monitor</button>
 
-    <table class="w3-table w3-bordered w3-striped">
+    <table class="w3-table w3-bordered w3-striped" ng-show=showGetsLock>
         <tr>
             <th>OID</th>
             <th>Value</th>
@@ -23,5 +27,25 @@
             <td>{{ response.value }} </td>
         </tr>
     </table>
+
+    <table class="w3-table w3-bordered w3-striped" ng-show=showMonitorLock>
+        <tr>
+            <th>OID</th>
+            <th>Value</th>
+        </tr>
+        <tr ng-repeat="monitoredObjectValue in monitoredObjectValues ">
+            <td>{{ monitoredObjectValue.oid }}</td>
+            <td>{{ monitoredObjectValue.value }} </td>
+        </tr>
+    </table>
+    <table class="w3-table w3-bordered w3-striped" ng-show=showTableLock>
+        <tr >
+            <th ng-repeat="columnName in getTableResponse.columnsNames">{{columnName}}</th>
+        </tr>
+        <tr ng-repeat="record in getTableResponse.values ">
+            <td ng-repeat="field in record.fields">{{ field }}</td>
+        </tr>
+    </table>
+
 
 </div>

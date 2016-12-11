@@ -8,7 +8,7 @@ import java.util.List;
 public class GetTableReply {
 
     List<String> columnsNames;
-    List<List<String>> values;
+    List<TableRecord> values;
 
     public List<String> getColumnsNames() {
         return columnsNames;
@@ -18,15 +18,15 @@ public class GetTableReply {
         this.columnsNames = columnsNames;
     }
 
-    public List<List<String>> getValues() {
+    public List<TableRecord> getValues() {
         return values;
     }
 
-    public void setValues(List<List<String>> values) {
+    public void setValues(List<TableRecord> values) {
         this.values = values;
     }
 
-    public GetTableReply(List<String> columnsNames, List<List<String>> values) {
+    public GetTableReply(List<String> columnsNames, List<TableRecord> values) {
         this.columnsNames = columnsNames;
         this.values = values;
     }

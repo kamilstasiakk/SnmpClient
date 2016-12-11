@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import pl.stasiak.pytel.SnmpManager;
 import pl.stasiak.pytel.entities.GetReply;
 import pl.stasiak.pytel.entities.GetTableReply;
+import pl.stasiak.pytel.entities.TableRecord;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +69,19 @@ public class SnmpController {
         client = new SnmpManager("udp:" + ip + "/161");
         try {
             Pair<List<List<String>>,List<String>> result = client.getTable(new OID(oid));
-            return new ResponseEntity<GetTableReply>(new GetTableReply(result.getValue(), result.getKey()), HttpStatus.OK);
+            List<List<String>> value = result.getKey();
+            List<TableRecord> table = new ArrayList<>();
+            int columnCount = value.size();
+            int rowCount = value.get(0).size();
+            for ( int rowNumber = 0; rowNumber < rowCount; rowNumber++)
+            {
+                List<String> row = new ArrayList<>();
+                for(int columnNumber = 0; columnNumber < columnCount; columnNumber++ ) {
+                    row.add(value.get(columnNumber).get(rowNumber));
+                }
+                table.add(new TableRecord(row));
+            }
+            return new ResponseEntity<GetTableReply>(new GetTableReply(result.getValue(), table), HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,13 +100,13 @@ public class SnmpController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getMonitoredValue/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody ResponseEntity<String> getMonitoredValue(@PathVariable String ip, @PathVariable String oid) {
+    @RequestMapping(value = "/getMonitoredValue/{ip}/", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody ResponseEntity<GetReply> getMonitoredValue(@PathVariable String ip) {
 
         SnmpManager client;
         client = new SnmpManager("udp:" + ip + "/161");
 
-        client.getMonitoredObjectValues();
-        return new ResponseEntity<>(HttpStatus.OK);
+        Pair<String, String> res = client.getMonitoredObjectValues();
+        return new ResponseEntity<>(new GetReply(res.getKey(), res.getValue()),HttpStatus.OK);
     }
 }

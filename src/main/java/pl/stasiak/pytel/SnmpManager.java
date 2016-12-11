@@ -189,12 +189,13 @@ public class SnmpManager {
         return target;
     }
 
-    public String getMonitoredObjectValues () {
+    public Pair<String, String> getMonitoredObjectValues () {
         try {
             lock.lock();
             String value = monitoredObjectValue.toString();
+            String oid = monitoredOID.toString();
             lock.unlock();
-            return value;
+            return new Pair<>(value, oid);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

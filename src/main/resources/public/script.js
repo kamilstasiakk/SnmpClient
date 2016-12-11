@@ -13,18 +13,37 @@ app.config(function($routeProvider) {
             controller : "contactCtrl"
         });
 });
-app.controller("guiCtrl", function ($scope, $http, $filter, $interval) {
+app.controller("guiCtrl", function ($scope, $http) {
     $scope.actions = ["Get", "GetNext", "GetTable", "Monitor"];
 
+    $scope.getResponses = [];
     $scope.performAction = function() {
 
-        if(selectedAction == "Get") {
-            $http.get("http://localhost:8080/snmp/get/" + $scope.ipAddress + "/" + $.scope.oid + "/")
+        if(angular.equals( $scope.selectedAction, $scope.actions[0])) {
+            $http.get("http://localhost:8080/snmp/get/" + $scope.ipAddress + "/" + $scope.oid + "/")
                 .then(function (response) {
                     $scope.getResponses.push(response.data);
 
                 });
         }
+
+        if( $scope.selectedAction == "GetNext") {
+            $http.get("http://localhost:8080/snmp/getNext/" + $scope.ipAddress + "/" + $scope.oid + "/")
+                .then(function (response) {
+                    $scope.getResponses.push(response.data);
+
+                });
+        }
+
+        if( $scope.selectedAction == "GetTable") {
+            $http.get("http://localhost:8080/snmp/getTable/" + $scope.ipAddress + "/" + $scope.oid + "/")
+                .then(function (response) {
+                    $scope.table = response.data;
+
+                });
+        }
+
+
     };
 
 });

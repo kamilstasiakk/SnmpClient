@@ -12,32 +12,16 @@
 
     <button class="w3-btn w3-green w3-ripple"  ng-click="performAction()">&#9998; Perform</button>
     <br>
-    <table class="w3-table w3-bordered w3-striped" >
 
+    <table class="w3-table w3-bordered w3-striped">
         <tr>
-            <th><a >Requested Values</a></th>
-            <th><a >Table</a></th>
-
+            <th>OID</th>
+            <th>Value</th>
         </tr>
-        <tr >
-            <td>
-                <table class="w3-table w3-bordered w3-striped">
-                    <tr>
-                        <th>OID</th>
-                        <th>Value</th>
-                    </tr>
-                    <tr ng-repeat-start="response in getResponses ">
-                        <th>{ response.oid }</th>
-                        <th>{ response.value }</th>
-                    </tr>
-                </table>
-            </td>
-            <td>
-
-            </td>
+        <tr ng-repeat="response in getResponses ">
+            <td>{{ response.oid }}</td>
+            <td>{{ response.value }} </td>
         </tr>
-
     </table>
-
 
 </div>

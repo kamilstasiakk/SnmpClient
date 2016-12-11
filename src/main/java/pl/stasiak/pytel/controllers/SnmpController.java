@@ -28,8 +28,8 @@ public class SnmpController {
     }
     @RequestMapping(value = "/get/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody ResponseEntity<String> get(@PathVariable String ip, @PathVariable String oid) {
-        SnmpManager client;
-        client = new SnmpManager("udp:" + ip + "/161");
+
+        SnmpManager client = new SnmpManager("udp:" + ip + "/161");
         try {
             return new ResponseEntity<String>(client.getAsString(new OID(oid)), HttpStatus.OK);
         } catch (IOException e) {
@@ -74,4 +74,24 @@ public class SnmpController {
         return new ResponseEntity<GetTableReply>(new GetTableReply(null, null), HttpStatus.NO_CONTENT);
     }
 
+
+    @RequestMapping(value = "/startMonitoring/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody ResponseEntity<String> startMonitoring(@PathVariable String ip, @PathVariable String oid) {
+
+        SnmpManager client;
+        client = new SnmpManager("udp:" + ip + "/161");
+
+        client.startMonitoring(new OID(oid));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getMonitoredValue/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody ResponseEntity<String> getMonitoredValue(@PathVariable String ip, @PathVariable String oid) {
+
+        SnmpManager client;
+        client = new SnmpManager("udp:" + ip + "/161");
+
+        client.getMonitoredObjectValues();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

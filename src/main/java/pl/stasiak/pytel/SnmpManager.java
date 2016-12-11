@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.sun.org.apache.xml.internal.utils.ThreadControllerWrapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.util.Pair;
+import org.ietf.jgss.Oid;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -28,7 +31,9 @@ public class SnmpManager {
     Snmp snmp = null;
     String address = null;
     OID monitoredOID;
-    List<String> monitoredObjectValues;
+    StringBuilder monitoredObjectValue;
+    Lock lock = new Lock();
+    boolean monitorStarted = false;
 
 
 
@@ -39,6 +44,7 @@ public class SnmpManager {
     public SnmpManager(String add)
     {
         address = add;
+        monitoredObjectValue = new StringBuilder();
         monitoredOID = null;
         try {
             start();
@@ -181,8 +187,87 @@ public class SnmpManager {
         return target;
     }
 
-    public void startMonitor(OID oid) {
-        monitoredOID = oid;
-        monitoredObjectValues = null;
+    public String getMonitoredObjectValues () {
+        try {
+            lock.lock();
+            String value = monitoredObjectValue.toString();
+            lock.unlock();
+            return value;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+    public void startMonitoring(OID oid) {
+        try {
+            lock.lock();
+            monitoredOID = oid;
+            monitoredObjectValue.delete(0,monitoredObjectValue.length()-1);
+            lock.unlock();
+            if(!monitorStarted) {
+                monitorStarted = true;
+                startMonitor();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static class Monitor implements Runnable {
+        StringBuilder monitoredValue;
+        OID monitoredOid;
+        Lock lock;
+        SnmpManager client;
+        boolean monitorStarted;
+        public Monitor(StringBuilder monitoredValue, OID monitoredOid, Lock lock, boolean monitorStarted, String add) {
+            this.monitoredValue = monitoredValue;
+            this.lock = lock;
+            this.monitoredOid = monitoredOid;
+            this.client = new SnmpManager(add);
+            this.monitorStarted = monitorStarted;
+        }
+
+        public void run() {
+            while(monitorStarted) {
+                try {
+                    lock.lock();
+                    monitoredValue.delete(0,monitoredValue.length()-1);
+                    monitoredValue.append(client.getAsString(monitoredOid));
+                    lock.unlock();
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    private void startMonitor() {
+        new Thread(new Monitor(monitoredObjectValue, monitoredOID, lock, monitorStarted, address)).start();
+    }
+
+
+
+    public class Lock{
+
+        private boolean isLocked = false;
+
+        public synchronized void lock()
+                throws InterruptedException{
+            while(isLocked){
+                wait();
+            }
+            isLocked = true;
+        }
+
+        public synchronized void unlock(){
+            isLocked = false;
+            notify();
+        }
+    }
+
+
 }

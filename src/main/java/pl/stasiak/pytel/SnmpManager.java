@@ -101,21 +101,23 @@ public class SnmpManager {
         OID currentOID;
         List<List<String>> table = new ArrayList<List<String>>();
         List<String> oids = new ArrayList<>();
-        int columnNumber = -1;
+
+        oids.add(rootOID + ".1");
+        int columnNumber = 1;
         while(true) {
             ResponseEvent responseEvent = getNext(new OID[] { previousOID } );
             currentOID = responseEvent.getResponse().get(0).getOid();
             if (!currentOID.toString().startsWith(rootOID)) {
                 break;
             }
-            if(!currentOID.equals(previousOID)) {
+            if(!currentOID.toString().startsWith(rootOID + "." + columnNumber)) {
                 columnNumber++;
-                oids.add(currentOID.toString());
+                oids.add(rootOID + "." + columnNumber);
             }
-            if(table.size() <= columnNumber ) {
+            if(table.size() <= columnNumber-1 ) {
                 table.add( new ArrayList<String>());
             }
-            table.get(columnNumber).add(responseEvent.getResponse().get(0).getVariable().toString());
+            table.get(columnNumber-1).add(responseEvent.getResponse().get(0).getVariable().toString());
 
             previousOID = currentOID;
         }

@@ -96,7 +96,7 @@ public class SnmpManager {
     }
 
     public Pair<List<List<String>>,List<String>> getTable(OID oid) throws IOException {
-        String rootOID = oid.toString();
+        String rootOID = oid.toString() + ".1";
         OID previousOID = oid;
         OID currentOID;
         List<List<String>> table = new ArrayList<List<String>>();

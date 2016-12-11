@@ -3,7 +3,7 @@ package pl.stasiak.pytel.entities;
 /**
  * Created by Kamil on 10.12.2016.
  */
-public class GetNextReply {
+public class GetReply {
     String value;
     String oid;
 
@@ -23,7 +23,7 @@ public class GetNextReply {
         this.oid = oid;
     }
 
-    public GetNextReply(String value, String oid) {
+    public GetReply(String value, String oid) {
         this.value = value;
         this.oid = oid;
     }

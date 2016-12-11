@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<script src="script.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+
+<body ng-app="snmtClient">
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand">SNMP Client</a>
+        </div>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/"> Home</a></li>
+            <li><a href="#gui"> Client</a></li>
+            <li><a href="#contact"> Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+
+<div ng-view></div>
+
+
+</body>
+</html>

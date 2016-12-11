@@ -1,0 +1,43 @@
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+<div class="jumbotron text-center">
+
+    <label>OID</label>
+    <input class="w3-input w3-border" type="text" ng-model="oid"  placeholder="">
+
+    <label>IP Address</label>
+    <input class="w3-input w3-border" type="text" ng-model="ipAddress" placeholder="">
+
+    <label>Action Type</label>
+    <select ng-model="selectedAction" ng-options="x for x in actions"></select>
+
+    <button class="w3-btn w3-green w3-ripple"  ng-click="performAction()">&#9998; Perform</button>
+    <br>
+    <table class="w3-table w3-bordered w3-striped" >
+
+        <tr>
+            <th><a >Requested Values</a></th>
+            <th><a >Table</a></th>
+
+        </tr>
+        <tr >
+            <td>
+                <table class="w3-table w3-bordered w3-striped">
+                    <tr>
+                        <th>OID</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr ng-repeat-start="response in getResponses ">
+                        <th>{ response.oid }</th>
+                        <th>{ response.value }</th>
+                    </tr>
+                </table>
+            </td>
+            <td>
+
+            </td>
+        </tr>
+
+    </table>
+
+
+</div>

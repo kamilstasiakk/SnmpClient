@@ -32,20 +32,43 @@
         <tr>
             <th>OID</th>
             <th>Value</th>
+            <th>Time</th>
         </tr>
         <tr ng-repeat="monitoredObjectValue in monitoredObjectValues ">
             <td>{{ monitoredObjectValue.oid }}</td>
             <td>{{ monitoredObjectValue.value }} </td>
+            <td>{{ monitoredObjectValue.time }} </td>
         </tr>
     </table>
     <table class="w3-table w3-bordered w3-striped" ng-show=showTableLock>
-        <tr >
-            <th ng-repeat="columnName in getTableResponse.columnsNames">{{columnName}}</th>
+
+        <tr ng-repeat="record in getTableResponse.values ">
+            <td><p>{{record.fields[0]}}</p></td>
+            <td><p>{{record.fields[1]}}</p></td>
+            <td><p>{{record.fields[2]}}</p></td>
+            <td><p>{{record.fields[3]}}</p></td>
+            <td><p>{{record.fields[4]}}</p></td>
+            <td><p>{{record.fields[5]}}</p></td>
+            <td><p>{{record.fields[6]}}</p></td>
+            <td><p>{{record.fields[7]}}</p></td>
+            <td><p>{{record.fields[8]}}</p></td>
+            <td><p>{{record.fields[9]}}</p></td>
+            <td><p>{{record.fields[10]}}</p></td>
+            <td><p>{{record.fields[11]}}</p></td>
+            <td><p>{{record.fields[12]}}</p></td>
         </tr>
         <tr ng-repeat="record in getTableResponse.values ">
-            <td ng-repeat="field in record.fields">{{ field }}</td>
+
+            <td ng-repeat="field in record.fields">{{field}}</td>
         </tr>
     </table>
+    <!--<p>{{getTableResponse}}</p>-->
+    <!--<br>-->
+    <!--<p>{{getTableResponse.columnsNames}}</p>-->
+    <!--<br>-->
+    <!--<p>{{getTableResponse.values}}</p>-->
+    <!--<br>-->
+    <!--<p>{{getTableResponse.values[0].fields}}</p>-->
 
 
 </div>

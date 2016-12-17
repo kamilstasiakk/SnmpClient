@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import pl.stasiak.pytel.SnmpManager;
 import pl.stasiak.pytel.entities.GetReply;
 import pl.stasiak.pytel.entities.GetTableReply;
+import pl.stasiak.pytel.entities.GetWithTimeReply;
 import pl.stasiak.pytel.entities.TableRecord;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +41,19 @@ public class SnmpController {
             e.printStackTrace();
         }
         return new ResponseEntity<GetReply>(new GetReply("", ""), HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "/getWithTime/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody ResponseEntity<GetWithTimeReply> getWithTime(@PathVariable String ip, @PathVariable String oid) {
+
+        SnmpManager client = new SnmpManager("udp:" + ip + "/161");
+        try {
+            String value = client.getAsString(new OID(oid));
+            return new ResponseEntity<GetWithTimeReply>(new GetWithTimeReply(value, oid, new Date().toString()), HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<GetWithTimeReply>(new GetWithTimeReply("", "", new Date().toString()), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/getNext/{ip}/{oid}", method = RequestMethod.GET, produces = "application/json")

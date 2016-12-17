@@ -61,7 +61,7 @@ app.controller("guiCtrl", function ($scope, $http, $interval) {
     var updateMonitoredValue = function () {
         if($scope.monitorOn) {
 
-            $http.get("http://localhost:8080/snmp/get/" + $scope.monitoredAddress + "/" + $scope.monitoredOID + "/")
+            $http.get("http://localhost:8080/snmp/getWithTime/" + $scope.monitoredAddress + "/" + $scope.monitoredOID + "/")
                 .then(function (response) {
                     $scope.monitoredObjectValues.push(response.data);
                 });

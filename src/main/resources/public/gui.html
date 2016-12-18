@@ -2,7 +2,7 @@
 <div class="jumbotron text-center">
 
     <label>OID</label>
-    <input class="w3-input w3-border" type="text" ng-model="oid"  placeholder="">
+    <input class="w3-input w3-border" type="text" ng-model="oid" placeholder="">
 
     <label>IP Address</label>
     <input class="w3-input w3-border" type="text" ng-model="ipAddress" placeholder="">
@@ -10,21 +10,22 @@
     <label>Action Type</label>
     <select ng-model="selectedAction" ng-options="x for x in actions"></select>
 
-    <button class="w3-btn w3-green w3-ripple"  ng-click="performAction()">&#9998; Perform</button>
+    <button class="w3-btn w3-green w3-ripple" ng-click="performAction()">&#9998; Perform</button>
     <br>
     <br>
     <button class="w3-btn w3-round-large" ng-click="showGets()">GetResponse</button>
     <button class="w3-btn w3-round-large" ng-click="showTable()">Table</button>
     <button class="w3-btn w3-round-large" ng-click="showMonitor()">Monitor</button>
+    <button class="w3-btn w3-round-large" ng-click="showTraps()">Traps</button>
 
     <table class="w3-table w3-bordered w3-striped" ng-show=showGetsLock>
         <tr>
             <th>OID</th>
             <th>Value</th>
         </tr>
-        <tr ng-repeat="response in getResponses ">
+        <tr ng-repeat="response in getResponses ">//tutaj
             <td>{{ response.oid }}</td>
-            <td>{{ response.value }} </td>
+            <td>{{ response.value }}</td>
         </tr>
     </table>
 
@@ -36,8 +37,8 @@
         </tr>
         <tr ng-repeat="monitoredObjectValue in monitoredObjectValues ">
             <td>{{ monitoredObjectValue.oid }}</td>
-            <td>{{ monitoredObjectValue.value }} </td>
-            <td>{{ monitoredObjectValue.time }} </td>
+            <td>{{ monitoredObjectValue.value }}</td>
+            <td>{{ monitoredObjectValue.time }}</td>
         </tr>
     </table>
     <table class="w3-table w3-bordered w3-striped" ng-show=showTableLock>
@@ -62,13 +63,20 @@
             <td ng-repeat="field in record.fields">{{field}}</td>
         </tr>
     </table>
-    <!--<p>{{getTableResponse}}</p>-->
-    <!--<br>-->
-    <!--<p>{{getTableResponse.columnsNames}}</p>-->
-    <!--<br>-->
-    <!--<p>{{getTableResponse.values}}</p>-->
-    <!--<br>-->
-    <!--<p>{{getTableResponse.values[0].fields}}</p>-->
+    <table class="w3-table w3-bordered w3-striped" ng-show="showTrapsLock">
+        <tr>
+            <th>Source Adress</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Variable Binding</th>
+        </tr>
+        <tr ng-repeat="trap in traps.trapList">
+            <td>{{trap.sourceAdress}}</td>
+            <td>{{trap.type}}</td>
+            <td>{{trap.date|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            <td ng-repeat="vb in trap.variableBindings">{{vb.oid}} {{vb.variable}}</td>
+        </tr>
+    </table>
 
 
 </div>

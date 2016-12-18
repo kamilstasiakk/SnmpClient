@@ -1,27 +1,34 @@
 var app = angular.module("snmtClient", ["ngRoute"]);
-app.config(function($routeProvider) {
+app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl : "home.html",
+            templateUrl: "home.html",
         })
         .when("/gui", {
-            templateUrl : "gui.html",
-            controller : "guiCtrl"
+            templateUrl: "gui.html",
+            controller: "guiCtrl"
         })
         .when("/contact", {
-            templateUrl : "contact.html",
-            controller : "contactCtrl"
+            templateUrl: "contact.html",
+            controller: "contactCtrl"
         });
 });
 app.controller("guiCtrl", function ($scope, $http, $interval) {
-    $scope.actions = ["Get", "GetNext", "GetTable", "Monitor"];
+    $scope.actions = ["Get", "GetNext", "GetTable", "Monitor", "GetTraps"];
     $scope.showGetsLock = true;
     $scope.monitorOn = false;
+    $scope.showTrapsLock = false;
     $scope.getResponses = [];
     $scope.monitoredObjectValues = [];
-    $scope.performAction = function() {
+    $scope.traps=[];
+    var startTrapListeneter = function () {
+        $http.get("http://localhost:8080/snmp/startTraps");
+    };
+    startTrapListeneter();
 
-        if(angular.equals( $scope.selectedAction, $scope.actions[0])) {
+    $scope.performAction = function () {
+
+        if (angular.equals($scope.selectedAction, $scope.actions[0])) {
             $http.get("http://localhost:8080/snmp/get/" + $scope.ipAddress + "/" + $scope.oid + "/")
                 .then(function (response) {
                     $scope.getResponses.push(response.data);
@@ -30,7 +37,7 @@ app.controller("guiCtrl", function ($scope, $http, $interval) {
             $scope.showGets();
         }
 
-        if( $scope.selectedAction == "GetNext") {
+        if ($scope.selectedAction == "GetNext") {
             $http.get("http://localhost:8080/snmp/getNext/" + $scope.ipAddress + "/" + $scope.oid + "/")
                 .then(function (response) {
                     $scope.getResponses.push(response.data);
@@ -39,7 +46,7 @@ app.controller("guiCtrl", function ($scope, $http, $interval) {
             $scope.showGets();
         }
 
-        if( $scope.selectedAction == "GetTable") {
+        if ($scope.selectedAction == "GetTable") {
             $http.get("http://localhost:8080/snmp/getTable/" + $scope.ipAddress + "/" + $scope.oid + "/")
                 .then(function (response) {
                     $scope.getTableResponse = response.data;
@@ -49,17 +56,20 @@ app.controller("guiCtrl", function ($scope, $http, $interval) {
             $scope.showTable();
         }
 
-        if( $scope.selectedAction == "Monitor") {
+        if ($scope.selectedAction == "Monitor") {
             $scope.monitoredOID = $scope.oid;
             $scope.monitoredAddress = $scope.ipAddress;
             $scope.monitorOn = true;
+        }
+        if ($scope.selectedAction == "GetTraps") {
+            $scope.showTraps();
         }
 
     };
 
 
     var updateMonitoredValue = function () {
-        if($scope.monitorOn) {
+        if ($scope.monitorOn) {
 
             $http.get("http://localhost:8080/snmp/getWithTime/" + $scope.monitoredAddress + "/" + $scope.monitoredOID + "/")
                 .then(function (response) {
@@ -67,26 +77,43 @@ app.controller("guiCtrl", function ($scope, $http, $interval) {
                 });
         }
     };
+    var updateTraps = function () {
+        $http.get("http://localhost:8080/snmp/getTraps")
+            .then(function (response) {
+                $scope.traps=response.data;
+            });
+    };
 
     $interval(function () {
         updateMonitoredValue();
+        updateTraps();
     }, 1000);
 
-    $scope.showGets = function() {
+    $scope.showGets = function () {
         $scope.showGetsLock = true;
         $scope.showTableLock = false;
         $scope.showMonitorLock = false;
+        $scope.showTrapsLock = false;
+
     }
 
-    $scope.showTable = function() {
+    $scope.showTable = function () {
         $scope.showGetsLock = false;
         $scope.showTableLock = true;
         $scope.showMonitorLock = false;
+        $scope.showTrapsLock = false;
     }
-    $scope.showMonitor = function() {
+    $scope.showMonitor = function () {
         $scope.showGetsLock = false;
         $scope.showTableLock = false;
         $scope.showMonitorLock = true;
+        $scope.showTrapsLock = false;
+    }
+    $scope.showTraps = function () {
+        $scope.showGetsLock = false;
+        $scope.showTableLock = false;
+        $scope.showMonitorLock = false;
+        $scope.showTrapsLock = true;
     }
 
 });

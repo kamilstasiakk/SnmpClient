@@ -248,10 +248,10 @@ public class SnmpManager {
 
         boolean trapListeningStarted;
         Lock lock;
-      static  List<Trap> traps;
+        static List<Trap> traps;
         SnmpManager client;
 
-        public TrapListener(Lock lock, boolean bool,List<Trap>listTraps, String adress) {
+        public TrapListener(Lock lock, boolean bool, List<Trap> listTraps, String adress) {
             this.lock = lock;
             trapListeningStarted = bool;
             traps = listTraps;
@@ -317,16 +317,20 @@ public class SnmpManager {
                     Trap trap = new Trap();
                     trap.setSourceAdress(cmdRespEvent.getPeerAddress().toString());
                     Vector<VariableBinding> variableBindings = pdu.getVariableBindings();
-                    // trap.setVariableBindings(pdu.getVariableBindings());
                     List<VarBindings> varBindings = new ArrayList<>();
                     for (VariableBinding vb : variableBindings) {
                         VarBindings varb = new VarBindings();
-                        varb.setOid(vb.getOid());
-                        varb.setVariable(vb.getVariable());
+                        varb.setOid(vb.getOid().toString());
+                        varb.setVariable(vb.getVariable().toString());
+                        varBindings.add(varb);
                     }
                     trap.setVariableBindings(varBindings);
-                    traps.add(trap);
+                    if (pdu.getType() == -92)
+                        trap.setType("SNMPv1 Trap");
+                    if (pdu.getType() == -89)
+                        trap.setType("SNMPv2 Trap");
 
+                    traps.add(trap);
 
                     System.out.println("Source adress: " + cmdRespEvent.getPeerAddress());
                     System.out.println("Trap Type = " + pdu.getType());
@@ -361,7 +365,7 @@ public class SnmpManager {
     }
 
     public void startTrapListen() {
-        new Thread(new TrapListener(lock, trapListenerStarted,trapList,address)).start();
+        new Thread(new TrapListener(lock, trapListenerStarted, trapList, address)).start();
     }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Trap {
     String sourceAdress;
-    int  type;
+    String  type;
     List<VarBindings> variableBindings = new ArrayList<>();
     Date date = new Date();
 
@@ -24,11 +24,11 @@ public class Trap {
         this.sourceAdress = sourceAdress;
     }
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 

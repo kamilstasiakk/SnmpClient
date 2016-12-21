@@ -7,25 +7,25 @@ import org.snmp4j.smi.Variable;
  * Created by Rafal on 2016-12-17.
  */
 public class VarBindings {
-    OID oid;
-    Variable variable;
+    String oid;
+    String variable;
 
     public VarBindings() {
     }
 
-    public OID getOid() {
+    public String getOid() {
         return oid;
     }
 
-    public void setOid(OID oid) {
+    public void setOid(String oid) {
         this.oid = oid;
     }
 
-    public Variable getVariable() {
+    public String getVariable() {
         return variable;
     }
 
-    public void setVariable(Variable variable) {
+    public void setVariable(String variable) {
         this.variable = variable;
     }
 }

@@ -1,6 +1,7 @@
 package pl.stasiak.pytel.controllers;
 
 import javafx.util.Pair;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,18 @@ public class AndroidController {
         return new ResponseEntity<AndroidGetReply>(new AndroidGetReply("", ""), HttpStatus.NO_CONTENT);
     }
 
+    @RequestMapping(value = "/get/systemName", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody ResponseEntity<AndroidGetReply> getSystemName() {
+
+        try {
+            String value = client.getAsString(new OID("1.3.6.1.2.1.1.5.0"));
+            return new ResponseEntity<AndroidGetReply>(new AndroidGetReply(value, "System users count"), HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<AndroidGetReply>(new AndroidGetReply("", ""), HttpStatus.NO_CONTENT);
+    }
+
     @RequestMapping(value = "/get/TcpConnections", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody ResponseEntity<GetTableReply> getTcpConnections() {
 
@@ -68,10 +81,11 @@ public class AndroidController {
         return getTable(new OID(".1.3.6.1.2.1.7.5"), columnNames);
     }
 
+
     @RequestMapping(value = "/get/Interfaces", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody ResponseEntity<GetTableReply> getInterfaces() {
 
-        String[] columnNames = {"Description", "Type", "MTU", "Speed", "MAC address",
+        String[] columnNames = {"ID","Description","MTU", "Speed", "MAC address",
                 "Administrative Status", "Operational Status", "Last change", "In Octets",
                 "In unicast Packet", "In non-Unicast Packet", "In Discards", "Unknown protocol",
                 "Out Octets", "Out Unicast Packet", "Out non-Unicast Packet", "Out Discards",
@@ -80,8 +94,28 @@ public class AndroidController {
         List<TableRecord> table = response.getBody().getValues();
         List<TableRecord> newTable = new ArrayList<>();
         for (TableRecord tableRecord : table) {
-            tableRecord.getFields().remove(tableRecord.getFields().size()-1);
-            newTable.add(new TableRecord(tableRecord.getFields()));
+            String hexDescription = tableRecord.getFields().get(1);
+            String[] characters = hexDescription.split(":");
+            StringBuilder sb = new StringBuilder();
+            for (String character : characters) {
+                if (!character.equals("00")) {
+                    sb.append(hexToChar(character));
+                }
+            }
+            List<String> oldFields = tableRecord.getFields();
+            List<String> newFields = new ArrayList<>();
+            for (int fieldNumber = 0; fieldNumber < oldFields.size() -2;fieldNumber++) {
+                if (fieldNumber == 2) {
+                    continue;
+                }
+                if (fieldNumber == 1) {
+                    newFields.add(sb.toString());
+                } else {
+                    newFields.add(oldFields.get(fieldNumber));
+                }
+
+            }
+            newTable.add(new TableRecord(newFields));
         }
         return new ResponseEntity<GetTableReply>(new GetTableReply(response.getBody().getColumnsNames(), newTable),
                 response.getStatusCode());
@@ -114,5 +148,21 @@ public class AndroidController {
         }
 
         return new ResponseEntity<GetTableReply>(new GetTableReply(null, null), HttpStatus.NO_CONTENT);
+    }
+
+    private char hexToChar(String hex) {
+        int old = hex.toCharArray()[0];
+        if (old > 47 && old < 58) {//liczba
+            old = (old -48) *16;
+        } else {
+            old = (old - 87) * 16;
+        }
+        int young = hex.toCharArray()[1];
+        if (young > 47 && young < 58) {//liczba
+            young = (young -48);
+        } else {
+            young = (young - 87);
+        }
+        return (char) (old + young);
     }
 }

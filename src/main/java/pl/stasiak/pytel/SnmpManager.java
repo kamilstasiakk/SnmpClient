@@ -198,7 +198,7 @@ public class SnmpManager {
     private Target getTarget() {
         Address targetAddress = GenericAddress.parse(address);
         CommunityTarget target = new CommunityTarget();
-        target.setCommunity(new OctetString("public"));
+        target.setCommunity(new OctetString("sauron"));
         target.setAddress(targetAddress);
         target.setRetries(2);
         target.setTimeout(1500);
